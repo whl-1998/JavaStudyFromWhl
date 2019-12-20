@@ -131,7 +131,7 @@ public class LinkedList<E> extends AbstractSequentialList<E> implements List<E>,
         }
     }
 
-	/**
+    /**
      * 在某个不为null的节点前插入一个新节点
      */
     void linkBefore(E e, Node<E> succ) {
