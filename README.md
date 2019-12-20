@@ -24,6 +24,10 @@ Recording what i have learned about Java
 
 [HashMap源码分析](https://github.com/whl-1998/JavaStudyFromWhl/blob/master/src/com/whl/jdkAnalysis/collections/hashMap/HashMap_analysis.md) 
 
+[LinkedList源码分析](https://github.com/whl-1998/JavaStudyFromWhl/blob/master/src/com/whl/jdkAnalysis/collections/linkedList/linkedList_analysis.md) 
+
+[LinkedHashMap源码分析](https://github.com/whl-1998/JavaStudyFromWhl/blob/master/src/com/whl/jdkAnalysis/collections/linkedHashMap/linkedHashMap_analysis.md) 
+
 ### 原子
 [Unsafe源码分析](https://github.com/whl-1998/JavaStudyFromWhl/blob/master/src/com/whl/jdkAnalysis/atomic/Unsafe.md)  
 
