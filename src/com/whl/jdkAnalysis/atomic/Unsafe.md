@@ -3,39 +3,39 @@ Unsafe为我们提供了访问底层的机制，这种机制仅供Java核心类�
 
 ### 1. 获取Unsafe实例
 ```java
-	private static final Unsafe theUnsafe;
-	
-	//经典单例模式
-	//构造器私有化, 通过静态方法返回同一个对象
-	private Unsafe() {
-    }
+private static final Unsafe theUnsafe;
 
-    @CallerSensitive
-    public static Unsafe getUnsafe() {
-    	//获取调用Unsafe的Class对象
-        Class var0 = Reflection.getCallerClass();
-        //若Class对应的类加载器采用的不是BootStrapClassLoader, 证明其并非核心类, 那么就抛出异常
-        if (!VM.isSystemDomainLoader(var0.getClassLoader())) {
-            throw new SecurityException("Unsafe");
-        } else {
-            return theUnsafe;
-        }
-    }
+//经典单例模式
+//构造器私有化, 通过静态方法返回同一个对象
+private Unsafe() {
+}
+
+@CallerSensitive
+public static Unsafe getUnsafe() {
+	//获取调用Unsafe的Class对象
+	Class var0 = Reflection.getCallerClass();
+	//若Class对应的类加载器采用的不是BootStrapClassLoader, 证明其并非核心类, 那么就抛出异常
+	if (!VM.isSystemDomainLoader(var0.getClassLoader())) {
+		throw new SecurityException("Unsafe");
+	} else {
+		return theUnsafe;
+	}
+}
 ```
 Unsafe提供了一个静态方法getUnsafe()用于获取它的实例对象，但直接调用会抛出SecurityException异常，这是因为Unsafe只提供给Java核心类使用，那么可以通过反射获取它的实例：
 ```java
-    public static void main(String[] args) throws NoSuchFieldException, IllegalAccessException {
-        // System.out.println(Class.class.getClassLoader()); //null --> BootStrapClassLoader
-        Field field = Unsafe.class.getDeclaredField("theUnsafe");//getField只能获取public属性
-        field.setAccessible(true);//关闭访问安全检查开关
-        Unsafe unsafe = (Unsafe) field.get(null);
-    }
+public static void main(String[] args) throws NoSuchFieldException, IllegalAccessException {
+	// System.out.println(Class.class.getClassLoader()); //null --> BootStrapClassLoader
+	Field field = Unsafe.class.getDeclaredField("theUnsafe");//getField只能获取public属性
+	field.setAccessible(true);//关闭访问安全检查开关
+	Unsafe unsafe = (Unsafe) field.get(null);
+}
 ```
 
 ### 2. 使用Unsafe实例化一个类
 ```java
-	//Unsafe通过一个native方法实现实例化一个类, 但是只会分配内存, 并不会调用该类的构造方法
-	public native Object allocateInstance(Class<?> var1) throws InstantiationException;
+//Unsafe通过一个native方法实现实例化一个类, 但是只会分配内存, 并不会调用该类的构造方法
+public native Object allocateInstance(Class<?> var1) throws InstantiationException;
 ```
 
 ### 3. 修改任意私有字段的值
@@ -73,11 +73,11 @@ class User {
 ```
 这部分也可以说体现了Unsafe不安全的特点，因为Unsafe是通过一个native方法直接对内存进行读写操作实现了更新：
 ```java
-	//通过传入更新对象var1, 偏移值var2, 更新的值var3完成更新
-	public native void putInt(Object var1, long var2, int var4);
+//通过传入更新对象var1, 偏移值var2, 更新的值var3完成更新
+public native void putInt(Object var1, long var2, int var4);
 
-	//调用native方法, 获取Field属性的偏移值
-	public native long objectFieldOffset(Field var1);
+//调用native方法, 获取Field属性的偏移值
+public native long objectFieldOffset(Field var1);
 ```
 不仅如此，我们也可以直接通过反射进行私有属性值的修改，如下所示：  
 ```java
@@ -126,6 +126,7 @@ private static Unsafe unsafe;
     public static void readFileUnsafe() {
         unsafe.throwException(new IOException());
     }
+}
 ```
 
 ### 5. 使用堆外内存
@@ -191,16 +192,16 @@ Juc包下大量使用了CAS操作，其底层都是通过Unsafe的CompareAndSwap
 
 下面是AtomicInteger实现的核心方法——compareAndSwapInt()
 ```java
-	/**
-	//compareAndSwapInt的实现逻辑可以用如下代码所示
-	if (object == expect) {
-		object = update;
-		return true;
-	} else {
-		return false;
-	}
-	*/
-	public final native boolean compareAndSwapInt(Object object, long valueOffset, int expect, int update);
+/**
+//compareAndSwapInt的实现逻辑可以用如下代码所示
+if (object == expect) {
+	object = update;
+	return true;
+} else {
+	return false;
+}
+*/
+public final native boolean compareAndSwapInt(Object object, long valueOffset, int expect, int update);
 ```
 
 ### 7. 阻塞或唤醒线程

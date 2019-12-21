@@ -65,50 +65,50 @@ thread1 update from 1 to 3
 ### 内部类
 实现将元素值与版本号进行绑定
 ```java
-    private static class Pair<T> {
-        final T reference;//元素值
-        final int stamp;//邮戳(版本号)
-        private Pair(T reference, int stamp) {
-            this.reference = reference;
-            this.stamp = stamp;
-        }
-        static <T> Pair<T> of(T reference, int stamp) {
-            return new Pair<T>(reference, stamp);
-        }
-    }
+private static class Pair<T> {
+	final T reference;//元素值
+	final int stamp;//邮戳(版本号)
+	private Pair(T reference, int stamp) {
+		this.reference = reference;
+		this.stamp = stamp;
+	}
+	static <T> Pair<T> of(T reference, int stamp) {
+		return new Pair<T>(reference, stamp);
+	}
+}
 ```
 
 ### 属性
 ```java
-	//volatile保证Pair的修改对所有线程可见
-	private volatile Pair<V> pair;
-	//unsafe实例
-	private static final sun.misc.Unsafe UNSAFE = sun.misc.Unsafe.getUnsafe();
-    //获取pair的偏移量
-    private static final long pairOffset =
-        objectFieldOffset(UNSAFE, "pair", AtomicStampedReference.class);
+//volatile保证Pair的修改对所有线程可见
+private volatile Pair<V> pair;
+//unsafe实例
+private static final sun.misc.Unsafe UNSAFE = sun.misc.Unsafe.getUnsafe();
+//获取pair的偏移量
+private static final long pairOffset =
+	objectFieldOffset(UNSAFE, "pair", AtomicStampedReference.class);
 ```
 
 ### compareAndSet()
 ```java
-    public boolean compareAndSet(V   expectedReference,
-                                 V   newReference,
-                                 int expectedStamp,
-                                 int newStamp) {
-        //获取当前(元素值 + 版本号)对象
-        Pair<V> current = pair;
-        return
-        	//若元素地址没变
-            expectedReference == current.reference &&
-            //版本号没变
-            expectedStamp == current.stamp &&
-            //新的元素地址 = 旧的元素地址
-            ((newReference == current.reference &&
-              //新的版本号 = 旧的版本号
-              newStamp == current.stamp) ||
-             //根据新的元素地址和版本号构造新的Pair并CAS更新
-             casPair(current, Pair.of(newReference, newStamp)));
-    }
+public boolean compareAndSet(V   expectedReference,
+							 V   newReference,
+							 int expectedStamp,
+							 int newStamp) {
+	//获取当前(元素值 + 版本号)对象
+	Pair<V> current = pair;
+	return
+		//若元素地址没变
+		expectedReference == current.reference &&
+		//版本号没变
+		expectedStamp == current.stamp &&
+		//新的元素地址 = 旧的元素地址
+		((newReference == current.reference &&
+		  //新的版本号 = 旧的版本号
+		  newStamp == current.stamp) ||
+		 //根据新的元素地址和版本号构造新的Pair并CAS更新
+		 casPair(current, Pair.of(newReference, newStamp)));
+}
 ```
 
 ### 总结
