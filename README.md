@@ -36,5 +36,8 @@ Recording what i have learned about Java
 [AtomicStampReference源码分析](https://github.com/whl-1998/JavaStudyFromWhl/blob/master/src/com/whl/jdkAnalysis/atomic/AtomicStampReference.md)
 
 ## Java基础
+[Java异常](https://github.com/whl-1998/JavaStudyFromWhl/blob/master/src/com/whl/javaBasis/ExceptionAndError.md)
+
+[Java零散的基础汇总](https://github.com/whl-1998/JavaStudyFromWhl/blob/master/src/com/whl/javaBasis/ExtraBasis.md)
 
 ## Spring
