@@ -84,6 +84,6 @@ public class ThreeSum {
 
     public static void main(String[] args) {
         ThreeSum ts = new ThreeSum();
-        ts.threeSum2(new int[]{-1, 0, 1, 2, -1, -4});
+        ts.threeSum1(new int[] {-1, 0, 1, 2, -1, -4});
     }
 }

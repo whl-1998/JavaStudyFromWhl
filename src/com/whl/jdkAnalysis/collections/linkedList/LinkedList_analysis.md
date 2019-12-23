@@ -97,7 +97,7 @@ void linkLast(E e) {
 ```
 
 ### add(int index, E element) index位置添加元素
-由于node(int index)涉及到链表的遍历，因此add(int i, E e)方法时间复杂度是O(n)
+由于node(int index)涉及到链表的遍历，因此add(int i, E e)方法时间复杂度是O(n)。
 ```java
 public void add(int index, E element) {
 	//判断是否越界
@@ -255,3 +255,10 @@ E unlink(Node<E> x) {
 （2）同时具备双端队列，队列，栈的特性  
 （3）首尾增、删元素非常高效，时间复杂度为O(1)  
 （4）中间增、删元素时间复杂度为O(n)  
+
+一些需要注意的点写在末尾：
+### 如何在LinkedList的基础上完成性能的提升
+可以在链表基础上升维，以空间换时间的策略增加索引指针，这个实现也就是所谓的“跳表”。
+跳表的遍历方式如下图所示：
+![skipList](https://redisbook.readthedocs.io/en/latest/_images/skiplist.png)
+可以看到，跳表在链表的基础上增加了logN个索引指针，1级指针每次跨2步，2级指针每次跨4步，n级指针每次跨2^n步。假设我们要在一个长度为64的跳表中访问58这个节点，首先经过第5级(log32)指针跨到32位置，再经过第4级指针跨16步到达48位置，再经过第3级指针跨8步到达56位置，再经过第二级指针跨1步到达终点。整个遍历过程的时间复杂度是O(logN)的，但每当增加或者删除一个节点，跳表都需要进行维护，因此增、删操作的时间复杂度也是logN的。顺便一提，跳表也应用于redis工程中。

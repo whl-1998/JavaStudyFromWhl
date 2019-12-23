@@ -8,31 +8,40 @@ import java.util.List;
  * @author whl
  * @version V1.0
  * @Title: 47. 全排列II
- * @Description:
+ * @Description: normal
  */
 public class PermutationsII {
+    /**
+     * 1. dfs + 枝减
+     * 思路：在47. 全排列的基础上添加一个boolean数组进行判重
+     * 1. 将nums进行排序, 保证判重有效性
+     * 2. 如果当前元素已经添加到组合中, continue
+     * 3. 如果nums[i]与nums[i - 1]相同, 并且nums[i - 1]尚未使用, 说明一定会出现重复组合, continue
+     * 执行用时：2ms
+     * @param nums
+     * @return
+     */
     public List<List<Integer>> permuteUnique(int[] nums) {
-        List<List<Integer>> result = new ArrayList<>();
-        List<Integer> temp = new ArrayList<>();
+        List<List<Integer>> res = new ArrayList<>();
         Arrays.sort(nums);
-        boolean[] flags = new boolean[nums.length];
-        recur(result, temp, flags, nums);
-        return result;
+        recur(res, new ArrayList<>(), new boolean[nums.length], nums);
+        return res;
     }
 
-    private void recur(List<List<Integer>> result, List<Integer> temp, boolean[] flags, int[] nums) {
+    private void recur(List<List<Integer>> res, List<Integer> temp, boolean[] flag, int[] nums) {
         if (temp.size() == nums.length) {
-            result.add(new ArrayList<>(temp));
+            res.add(new ArrayList<>(temp));
             return;
         }
+
         for (int i = 0; i < nums.length; i++) {
-            if (flags[i]) continue;
-            if (i > 0 && nums[i] == nums[i - 1] && !flags[i - 1]) continue;
-            flags[i] = true;
+            if (flag[i]) continue;
+            if (i > 0 && nums[i] == nums[i - 1] && !flag[i - 1]) continue;
             temp.add(nums[i]);
-            recur(result, temp, flags, nums);
+            flag[i] = true;
+            recur(res, temp, flag, nums);
+            flag[i] = false;
             temp.remove(temp.size() - 1);
-            flags[i] = false;
         }
     }
 
