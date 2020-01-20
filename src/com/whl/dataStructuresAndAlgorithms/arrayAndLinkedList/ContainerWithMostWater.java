@@ -37,16 +37,16 @@ public class ContainerWithMostWater {
      * @return
      */
     public int maxArea2(int[] height) {
-        int i = 0, j = height.length - 1, maxVolume = 0;
+        int i = 0, j = height.length - 1, maxVol = 0;
         while (i < j) {
             int minHigh = height[i] < height[j] ? height[i++] : height[j--];
-            maxVolume = Math.max(maxVolume, minHigh * (j - i + 1));
+            maxVol = Math.max(maxVol, minHigh * (j - i + 1));
         }
-        return maxVolume;
+        return maxVol;
     }
 
     public static void main(String[] args) {
         ContainerWithMostWater cw = new ContainerWithMostWater();
-        cw.maxArea1(new int[]{1,8,6,2,5,4,8,3,7});
+        cw.maxArea2(new int[]{1,8,6,2,5,4,8,3,7});
     }
 }
