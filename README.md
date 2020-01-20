@@ -3,13 +3,10 @@ Recording what i have learned about Java
 
 ## 算法与数据结构
 * [总概Xmind](https://www.processon.com/view/link/5dfb52fee4b06c8b0bb60ffe)
-* 
-[数组与链表(包括了以数组、链表为底层数据结构的题)](https://github.com/whl-1998/JavaStudyFromWhl/tree/master/src/com/whl/dataStructuresAndAlgorithms/arrayAndLinkedList)
-* 
-[DFS与BFS(包括了递归的各种形态以及BFS的各种优化算法)](https://github.com/whl-1998/JavaStudyFromWhl/tree/master/src/com/whl/dataStructuresAndAlgorithms/dfsAndBfs)
-*
-[动态规划(包括了一些贪心算法)](https://github.com/whl-1998/JavaStudyFromWhl/tree/master/src/com/whl/dataStructuresAndAlgorithms/dynamicProgramming)
-*[位运算]()
+* [数组与链表(包括了以数组、链表为底层数据结构的题)](https://github.com/whl-1998/JavaStudyFromWhl/tree/master/src/com/whl/dataStructuresAndAlgorithms/arrayAndLinkedList)
+* [DFS与BFS(包括了递归的各种形态以及BFS的各种优化算法)](https://github.com/whl-1998/JavaStudyFromWhl/tree/master/src/com/whl/dataStructuresAndAlgorithms/dfsAndBfs)
+* [动态规划(包括了一些贪心算法)](https://github.com/whl-1998/JavaStudyFromWhl/tree/master/src/com/whl/dataStructuresAndAlgorithms/dynamicProgramming)
+* [位运算]()
 
 ## JDK源码分析
  
