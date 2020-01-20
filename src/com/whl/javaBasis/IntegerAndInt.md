@@ -2,6 +2,7 @@
 int是Java八个基本数据类型之一，而Integer是int对应的包装类，它有一个```final int value```字段用于存储int类型的数据，并提供了一些相应的方法实现”字符串转换整数“、“数学运算”等操作。在Java 5时期引入了自动装箱和拆箱的机制，使得Java可以根据上下文自动对int或者Integer进行转换。不仅如此，还新增了Integer的缓存机制，使得在通过静态工厂方法Integer.valueOf创建-128~127这个范围的Integer对象时，通过缓存进行创建，明显地带来了性能的改善。不仅是Integer，其他的包装类也同样实现了缓存机制。
 
 ### Integer的自动装箱与拆箱
+
 自动装箱可以简单理解为Java平台为我们自动进行了一些转换，保证不同的写法在运行时等价，它们发生在编译阶段，也就是生成的字节码是一致的。例如```Integer val = 123;```
 javac替我们把1998自动装箱转换为Integer.valueOf()，同样的```int val = new Integer(123)```javac也替我们把Integer对象自动拆箱转换为Integer.intValue()。那么既然自动装箱是通过Integer.valueOf实现的，自然能够享受到缓存带来的性能提升。
 
@@ -73,6 +74,7 @@ private static class IntegerCache {
 ```
 
 ### Integer的安全考量以及线程安全问题
+
 上文中提到过，Integer底层的int value是被声明为private final的，因此Integer也是不可变类型。这样设计也带来了基本的信息安全和并发编程中的线程安全，假设我们通过一个Integer对象来设置服务器某个服务的端口，如果能够轻易地获取并且更改这个数值，就会带来很严重的安全方面问题。  
 
 需要注意的是，虽然Integer是不可变类型，但如果想要在多线程场景下实现Integer的自增功能，一定要采用AtomicInteger，下面是通过Integer实现的线程计数器代码：
