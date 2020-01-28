@@ -18,23 +18,25 @@ public class DistinctSubsequences {
      *          综上, DP[i][j] = S[i] == T[j] ? DP[i - 1][j - 1] + DP[i][j - 1] : DP[i][j - 1]
      * 时间复杂度：O(n^2)
      * 空间复杂度：O(n^2)
-     * 执行用时：7ms
+     * 执行用时：4ms
      * @param s
      * @param t
      * @return
      */
     public int numDistinct(String s, String t) {
-        int[][] dp = new int[t.length() + 1][s.length() + 1];
-        for (int i = 0; i < dp[0].length; i++) {
-            dp[0][i] = 1;
+        if (s.equals(t)) return 1;
+        char[] s1 = s.toCharArray();
+        char[] s2 = t.toCharArray();
+        int[][] dp = new int[s1.length + 1][s2.length + 1];
+        for (int i = 0; i < dp.length; i++) {
+            dp[i][0] = 1;
         }
         for (int i = 1; i < dp.length; i++) {
             for (int j = 1; j < dp[0].length; j++) {
-                int m = i - 1, n = j - 1;
-                dp[i][j] = s.charAt(n) == t.charAt(m) ? dp[i - 1][j - 1] + dp[i][j - 1] : dp[i][j - 1];
+                dp[i][j] = s1[i - 1] == s2[j - 1] ? dp[i - 1][j - 1] + dp[i - 1][j] : dp[i - 1][j];
             }
         }
-        return dp[dp.length - 1][dp[0].length - 1];
+        return dp[s1.length][s2.length];
     }
 
     public static void main(String[] args) {
