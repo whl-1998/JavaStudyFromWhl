@@ -20,18 +20,19 @@ public class SearchInRotatedSortedArray {
      * @return
      */
     public int search(int[] nums, int target) {
+        if (nums.length == 0 || nums == null) return -1;
         int minIdx = findMinIdx(nums);
         int left = 0;
         int right = nums.length - 1;
         // target在偏移点右侧
-        if (target <= nums[nums.length - 1]) {
+        if (target <= nums[right]) {
             left = minIdx;
         } else {
             //target 在偏移点左侧
             right = minIdx - 1;
         }
         while (left <= right) {
-            int mid = (left + right) >> 1;
+            int mid = left + (right - left)/2;
             if (nums[mid] == target) {
                 return mid;
             } else if (nums[mid] < target) {
@@ -47,11 +48,11 @@ public class SearchInRotatedSortedArray {
         int left = 0;
         int right = nums.length - 1;
         while (left < right) {
-            int mid = (left + right) >> 1;
-            if (nums[mid] > nums[right]) {
-                left = mid + 1;
-            } else {
+            int mid = left + (right - left)/2;
+            if (nums[mid] <= nums[right]) {
                 right = mid;
+            } else {
+                left = mid + 1;
             }
         }
         return left;

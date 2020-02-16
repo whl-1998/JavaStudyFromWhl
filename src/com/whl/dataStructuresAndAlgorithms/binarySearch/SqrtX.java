@@ -64,9 +64,40 @@ public class SqrtX {
         return (int)res;
     }
 
+    /**
+     * 4. 二分查找, 逻辑清晰版
+     * 思路：这道题其实本质上就是二分查找最后一个小于等于给定值的元素：
+     * 如果 mid * mid > x, 说明mid大了, right = mid - 1
+     * 如果 mid * mid <= x, 说明mid有可能是平方根, 但还需进一步判断：
+     *      如果mid是最后一个数, 那么可以确定是最后一个mid * mid小于等于target的值
+     *      如果(mid + 1)*(mid + 1)是大于x的, 那么也可以确定该mid是最后一个mid * mid小于等于target的值
+     *      如果上述条件都不满足, 说明mid后面有符合条件的数, 于是left = mid + 1
+     * 时间复杂度：O(logN)
+     * 空间复杂度：O(1)
+     * 执行用时：2ms
+     * @param x
+     * @return
+     */
+    public int mySqrt4(int x) {
+        long left = 0;
+        long right = x/2 + 1;
+        while (left <= right) {
+            long mid = (right - left)/2 + left;
+            if (mid * mid > x) {
+                right = mid - 1;
+            } else {
+                if (mid == right || (mid + 1)*(mid + 1) > x) {
+                    return (int)mid;
+                } else {
+                    left = mid + 1;
+                }
+            }
+        }
+        return -1;
+    }
 
     public static void main(String[] args) {
         SqrtX sx = new SqrtX();
-        System.out.println(sx.mySqrt1(8));
+        System.out.println(sx.mySqrt4(2147395599));
     }
 }
