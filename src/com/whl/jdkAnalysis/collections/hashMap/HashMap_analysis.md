@@ -4,7 +4,7 @@ HashMap采用key-value的存储结构，每个唯一key对应一个唯一的valu
 ```java
 public class HashMap<K,V> extends AbstractMap<K,V>
     implements Map<K,V>, Cloneable, Serializable {
- ```
+```
  （1）继承了AbstractMap，实现了Map接口，具备Map的所有功能  
  （2）实现了Cloneable，可以被克隆  
  （3）实现了Serializable，可以被序列化  
@@ -110,11 +110,11 @@ static final class TreeNode<K,V> extends LinkedHashMap.Entry<K,V> {
 public HashMap(int initialCapacity, float loadFactor) {
 	//判断初始Capacity是否合法
 	if (initialCapacity < 0)
-		throw new IllegalArgumentException("Illegal initial capacity: " +
-										   initialCapacity);
+		throw new IllegalArgumentException("Illegal initial capacity: " + initialCapacity);
+    //如果初始Capacity大于最大容量, 那么以最大容量作为初始容量
 	if (initialCapacity > MAXIMUM_CAPACITY)
 		initialCapacity = MAXIMUM_CAPACITY;
-	//检查负载因子是否合法
+	//检查负载因子是否合法, 如果小于等于0或为空, 则抛出异常
 	if (loadFactor <= 0 || Float.isNaN(loadFactor))
 		throw new IllegalArgumentException("Illegal load factor: " +
 										   loadFactor);

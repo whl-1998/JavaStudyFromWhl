@@ -1,4 +1,4 @@
-package com.whl.dataStructuresAndAlgorithms.arrayAndLinkedList;
+package com.whl.dataStructuresAndAlgorithms.arrayAndLinkedList.array;
 
 /**
  * @author whl

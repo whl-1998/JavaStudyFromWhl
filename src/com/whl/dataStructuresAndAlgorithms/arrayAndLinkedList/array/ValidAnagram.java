@@ -1,4 +1,4 @@
-package com.whl.dataStructuresAndAlgorithms.arrayAndLinkedList;
+package com.whl.dataStructuresAndAlgorithms.arrayAndLinkedList.array;
 
 /**
  * @author whl
@@ -16,7 +16,6 @@ public class ValidAnagram {
      * 执行用时：2ms
      * @param s
      * @param t
-     * @return
      */
     public boolean isAnagram(String s, String t) {
         if (s.length() != t.length()) return false;

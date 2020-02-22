@@ -1,4 +1,4 @@
-package com.whl.dataStructuresAndAlgorithms.arrayAndLinkedList;
+package com.whl.dataStructuresAndAlgorithms.arrayAndLinkedList.array;
 
 import java.util.ArrayList;
 import java.util.Arrays;

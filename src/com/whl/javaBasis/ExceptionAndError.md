@@ -9,6 +9,7 @@ Java在设计之初就提供了相对完善的异常处理机制，该机制大�
 
 不同点：  
 Exception：是程序正常运行中可以预料的异常，它可以且应该尽可能被捕获并处理，且Exception又分为检查异常和非检查异常：
+
 1. CheckedException：泛指那些编译期就被强制要求抛出或者捕获并进行相应处理的异常，比如常见的IOException，FileNotFoundException等；
 
 2. UncheckedException：泛指运行时异常RuntimeException，通常是可以编写代码时避免的逻辑错误，不会在编译器强制要求。对于UncheckedException一般都采用if-else语句判断处理而不是通过try-catch块进行捕获，因为try-catch语句块会对性能造成一定的影响，正确的示例参照下列代码：
@@ -54,7 +55,7 @@ public class ExceptionHandlerMechanism {
         try {
             int i = 10/0;// 抛出一个异常对象, 直接进入到catch块寻找合适的异常处理器
             System.out.println(i);
-        }catch (ArithmeticException e){// 自顶向下寻找合适的异常处理器, 在这里成功匹配到了异常对象, 因此后序的catch块不会执行
+        } catch (ArithmeticException e){// 自顶向下寻找合适的异常处理器, 在这里成功匹配到了异常对象, 因此后序的catch块不会执行
             System.out.println("ArithmeticException");// 打印异常信息
             return 10;// 不会执行这个return, 直接进入到finally块执行剩下的逻辑
         }catch (Exception e){
@@ -100,6 +101,7 @@ try {
 捕获异常这个行为就是为了明确问题所在，若生吞异常就会造成：出现了错误也无法定位到问题所在。不仅如此，我们应该捕获特定的异常，这样不仅能够给代码阅读者提供更多信息，并且也不会捕获到那些并不想捕获的异常。
 
 #### 3. 尽量选择将异常信息持久化到日志系统
+
 在分布式系统中，出现了异常是无法通过堆栈轨迹定位问题的，因此应该将异常信息持久化到日志系统
 
 #### 4. 合理使用try-catch代码块
