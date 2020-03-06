@@ -234,28 +234,23 @@ public class VirtualWalletService {
 
 MVC与DDD模型的主要区别在于Service层，因此我们重点了解Service层按照DDD开发模式该如何实现。
 
-我们将虚拟钱包VirtualWallet类设计为一个充血的Domain领域模型，并且将原来在Service中的业务逻辑搬迁到VirtualWallet中，让Service类的实现依赖VirtualWallet：
+我们将VirtualWalletBo设计为一个充血的Domain领域模型，并且将原来在Service中的业务逻辑搬迁到VirtualWalletBo中，让Service类的实现依赖VirtualWallet：
 
 ```java
-public class VirtualWallet { // Domain领域模型(充血模型)
+public class VirtualWalletBo {
     private Long id;
-    private Long createTime = System.currentTimeMillis();;
+    private Long createTime = System.currentTimeMillis();
     private BigDecimal balance = BigDecimal.ZERO;
 
-    public VirtualWallet(Long preAllocatedId) {
+    public VirtualWalletBo(Long preAllocatedId) {
         this.id = preAllocatedId;
-    }
-
-    //获取余额
-    public BigDecimal balance() {
-        return this.balance;
     }
 
     //出账
     public void debit(BigDecimal amount) {
         //参数合法校验
         if (this.balance.compareTo(amount) < 0) {
-            throw new InsufficientBalanceException(...);
+            throw new NoSufficientBalanceException("余额不足, 无法出账");
         }
         //当前实例余额减去相应的值
         this.balance.subtract(amount);
@@ -265,27 +260,46 @@ public class VirtualWallet { // Domain领域模型(充血模型)
     public void credit(BigDecimal amount) {
         //参数合法校验
         if (amount.compareTo(BigDecimal.ZERO) < 0) {
-            throw new InvalidAmountException(...);
+            throw new InvalidAmountException("amount 不合法");
         }
         //当前实例余额增加相应的值
         this.balance.add(amount);
     }
+    
+    //获取余额
+    public BigDecimal balance() {
+        return balance;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public Long getCreateTime() {
+        return createTime;
+    }
 }
 
 public class VirtualWalletService {
-    //依赖
+    //依赖注入
     private VirtualWalletRepository walletRepo;
     private VirtualWalletTransactionRepository transactionRepo;
 
-    public VirtualWallet getVirtualWallet(Long walletId) {
-        //获取到walletEntity实例
+    public VirtualWalletBo getVirtualWallet(Long walletId) {
+        //根据传入id获取到walletEntity实例
         VirtualWalletEntity walletEntity = walletRepo.getWalletEntity(walletId);
-        //将walletEntity实例填充为VirtualWallet实例
-        VirtualWallet wallet = convert(walletEntity);
-        return wallet;
+        //对walletEntity实例填充逻辑, 转换为walletBo
+        VirtualWalletBo walletBo = convert(walletEntity);
+        return walletBo;
+    }
+
+    private VirtualWalletBo convert(VirtualWalletEntity walletEntity) {
+        //TODO: 填充walletEntity逻辑
+        return null;
     }
 
     public BigDecimal getBalance(Long walletId) {
+        //根据传入id获取到对应虚拟钱包的余额值
         return walletRepo.getBalance(walletId);
     }
 
@@ -293,8 +307,8 @@ public class VirtualWalletService {
         //获取到walletEntity实例
         VirtualWalletEntity walletEntity = walletRepo.getWalletEntity(walletId);
         //将walletEntity实例填充为VirtualWallet实例
-        VirtualWallet wallet = convert(walletEntity);
-         //调用VirtualWallet实例的debit()方法执行入账逻辑
+        VirtualWalletBo wallet = convert(walletEntity);
+        //调用VirtualWallet实例的debit()方法执行入账逻辑
         wallet.debit(amount);
         //更新数据库中对应wallet的余额
         walletRepo.updateBalance(walletId, wallet.balance());
@@ -305,7 +319,7 @@ public class VirtualWalletService {
         VirtualWalletEntity walletEntity = walletRepo.getWalletEntity(walletId);
         //注意这里与MVC模型的区别
         //将walletEntity实例填充为VirtualWallet实例
-        VirtualWallet wallet = convert(walletEntity);
+        VirtualWalletBo wallet = convert(walletEntity);
         //调用VirtualWallet实例的credit()方法执行转账逻辑
         wallet.credit(amount);
         //更新数据库中对应wallet的余额
@@ -313,12 +327,12 @@ public class VirtualWalletService {
     }
 
     public void transfer(Long fromWalletId, Long toWalletId, BigDecimal amount) {
-        //...跟基于贫血模型的传统开发模式的代码一样...
+        //与MVC模型的transfer相同
     }
 }
 ```
 
-通过上述代码，我们能够发现，Service层中主要的业务逻辑基本上都在领域模型VirtualWallet中实现，但是VirtualWallet依然很单薄，包含的业务逻辑都非常简单，相比起之前的MVC模型实现，似乎并没有什么优势。
+通过上述代码，我们能够发现，Service层中主要的业务逻辑基本上都在领域模型VirtualWalletBo中实现，但是VirtualWalletBo依然很单薄，包含的业务逻辑都非常简单，相比起之前的MVC模型实现，似乎并没有什么优势。
 
 这也印证了我们之前说的 —— “对于简单业务的系统，采用MVC模型更合适”，这也是为什么当前大部分业务系统都使用基于贫血模型开发的原因。
 
@@ -326,63 +340,89 @@ public class VirtualWalletService {
 
 ```java
 //Domain
-public class VirtualWallet {
-    private Long id;
-    private Long createTime = System.currentTimeMillis();;
+public class VirtualWalletBo {
+       private Long id;
+    private Long createTime = System.currentTimeMillis();
     private BigDecimal balance = BigDecimal.ZERO;
     private boolean isAllowedOverdraft = true;//默认允许透支
     private BigDecimal overdraftAmount = BigDecimal.ZERO;//透支金额默认为0
     private BigDecimal frozenAmount = BigDecimal.ZERO;//冻结金额默认为0
 
-    public VirtualWallet(Long preAllocatedId) {
+    public VirtualWalletBo(Long preAllocatedId) {
         this.id = preAllocatedId;
     }
-	
-    public void freeze(BigDecimal amount) { ... } //冻结指定金额
-    public void unfreeze(BigDecimal amount) { ...}//解冻指定金额
-    public void increaseOverdraftAmount(BigDecimal amount) { ... }//增加指定透支金额
-    public void decreaseOverdraftAmount(BigDecimal amount) { ... }//减少指定透支金额
-    public void closeOverdraft() { ... }//关闭透支
-    public void openOverdraft() { ... }//打开透支
 
-    public BigDecimal balance() {
-        return this.balance;
+    public void freeze(BigDecimal amount) {
+        //TODO: 冻结指定金额
     }
 
-    //获取最大可用金额 (余额 + 透支金额)
-    public BigDecimal getAvaliableBalance() {
-        //减去冻结的金额
-        BigDecimal totalAvaliableBalance = this.balance.subtract(this.frozenAmount);
-        //若允许透支, 那么加上透支的金额
-        if (isAllowedOverdraft) {
-            totalAvaliableBalance += this.overdraftAmount;
-        }
-        return totalAvaliableBalance;
+    public void unfreeze(BigDecimal amount) {
+        //TODO: 解冻指定金额
+    }
+    public void increaseOverdraftAmount(BigDecimal amount) {
+        //TODO: 增加指定透支金额
+    }
+    public void decreaseOverdraftAmount(BigDecimal amount) {
+        //TODO: 减少指定透支金额
+    }
+    public void closeOverdraft() {
+        //TODO: 关闭透支
+    }
+    public void openOverdraft() {
+        //TODO: 打开透支
     }
 
     //出账
     public void debit(BigDecimal amount) {
         //获取到最大可用金额
-        BigDecimal totalAvaliableBalance = getAvaliableBalance();
+        BigDecimal totalAvailableBalance = getAvailableBalance();
         //参数合法校验
-        if (totoalAvaliableBalance.compareTo(amount) < 0) {
-            throw new InsufficientBalanceException(...);
+        if (totalAvailableBalance.compareTo(amount) < 0) {
+            throw new NoSufficientBalanceException("最大可用金额不足, 无法出账");
         }
         //余额减去相应值
         this.balance.subtract(amount);
     }
-	
+    
+    //获取最大可用金额 (余额 + 透支金额)
+    private BigDecimal getAvailableBalance() {
+        //减去冻结的金额
+        BigDecimal totalAvailableBalance = this.balance.subtract(this.frozenAmount);
+        //若允许透支, 那么加上透支的金额
+        if (isAllowedOverdraft) {
+            totalAvailableBalance.add(this.overdraftAmount);
+        }
+        return totalAvailableBalance;
+    }
+
     //入账
     public void credit(BigDecimal amount) {
+        //参数合法校验
         if (amount.compareTo(BigDecimal.ZERO) < 0) {
-            throw new InvalidAmountException(...);
+            throw new InvalidAmountException("amount 不合法");
         }
+        //当前实例余额增加相应的值
         this.balance.add(amount);
+    }
+
+    //获取余额
+    public BigDecimal balance() {
+        return balance;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public Long getCreateTime() {
+        return createTime;
     }
 }
 ```
 
-在业务逻辑变得相对复杂之后，领域模型VirtualWallet的代码就丰富了许多。如果功能继续演进，还可以增加更加细化的冻结策略、透支策略、VirtualWallet Id 的自动生成策略（通过分布式Id生成算法自动生成Id），VirtualWallet就会变得更加复杂，也更加值得被设计为充血模型。
+在业务逻辑变得相对复杂之后，领域模型VirtualWallet的代码就丰富了许多。并且在新增了这些功能之后，Service中的逻辑几乎完全不需要更改。由此可见DDD模型不仅保证了封装性，同时也提高了代码的可扩展性、可维护性。
+
+如果功能继续演进，还可以增加更加细化的冻结策略、透支策略、VirtualWallet Id 的自动生成策略（通过分布式Id生成算法自动生成Id），VirtualWallet就会变得更加复杂，也更加值得被设计为充血模型。
 
 
 

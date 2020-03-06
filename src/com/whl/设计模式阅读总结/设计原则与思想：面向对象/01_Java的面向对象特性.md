@@ -17,13 +17,11 @@
 封装也称作信息隐藏或数据访问保护。类对数据进行封装，外部只能通过该类提供的方法访问内部信息或数据。示例如下代码所示：
 
 ```java
-
 public class Wallet {
     private String id;
     private long createTime;
     private BigDecimal balance;//钱包余额
     private long balanceLastModifiedTime;//上一次余额修改的时间
-    // ...
 
     public Wallet() {
         this.id = IdGenerator.getInstance().generate();
@@ -32,7 +30,7 @@ public class Wallet {
         this.balanceLastModifiedTime = System.currentTimeMillis();
     }
 
-    // 读方法
+    // getter方法
     public String getId() { return this.id; }
     public long getCreateTime() { return this.createTime; }
     public BigDecimal getBalance() { return this.balance; }
@@ -63,13 +61,13 @@ public class Wallet {
 
 在Wallet类中，对所有属性私有化，对外只提供了所有属性的get方法和两个修改方法。之所以这样设计是因为id、createTime在Wallet实例被创建后就不需要修改，因此对外并不提供它们的set方法，从而保证了这两个属性的封装性。
 
-而对于balance和balanceLastModifiedTime属性，我们先对其分析能够得知：
+而对于balance和balanceLastModifiedTime属性，针对Wallet的业务，要实现如下需求：
 
 * balance被修改的同时，balanceLastModifiedTime也需要被修改。
 * balance被修改的方式只能通过增加/减少来执行，不允许值的覆盖。
 * balance增加/减少值必须合法，例如增加的值不允许小于0。
 
-因此，我们仅对外开放 increaseBalance() 与decreaseBalance() 这两个方法，用于满足上述条件的balance增/减操作，具体如上述代码所示。
+因此，我们仅对外开放 increaseBalance() 与decreaseBalance() 这两个方法，用于满足上述条件的balance增/减操作。
 
 可以发现，封装这个特性需要编程语言提供的访问权限控制关键字来实现，例如上述代码中private、public等关键字就是Java实现封装特性的核心。
 
@@ -113,7 +111,7 @@ public class PictureStorage implements IPictureStorage {
 
 上述代码是图片存储的接口和实现类，当调用者需要使用图片存储功能时，只需要了解IPictureStorage接口中提供的抽象方法，而不需要了解PictureStorage实现类中方法的具体实现。
 
-实际上，“抽象” 特性无处不在，而且它的好处也显而易见。就好比我们在初学HashMap时不可能一上来就直接就看源码，只需要了解各个API的功能就能够使用HashMap了。这就是 “抽象” 带来的好处。
+实际上，“抽象” 特性无处不在，而且它的好处也显而易见。就好比我们在使用某个List容器时，只需要关注List接口提供的功能列表，能够很轻松地使用不同特性的List实现类。这就是 “抽象” 带来的好处。
 
 我们在定义类的方法名时，也要让名称足够 “抽象” ，例如一个图片存储方法名 getAliyunPictureUrl() 就不够抽象，假如某天图片服务器从阿里云迁移到腾讯云，这个方法的名字还得改。因此，我们只需要抽取关键的部分 —— getPictrueUrl() 就可以了。
 
@@ -262,4 +260,4 @@ private static void prinArray(Array iterator) {
 
 除此以外，多态也是很多设计原则的基石，例如 “基于接口而非实现编程”、“利用多态去掉冗长的 if - else 语句”、“里式替换原则”等。
 
-**总的来说，多态能够提高代码的可扩展性可代码复用性。**
+**总的来说，多态能够提高代码的可扩展性、代码复用性。**
